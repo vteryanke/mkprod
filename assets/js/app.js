@@ -74,6 +74,29 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('recompute', recompute);
   recompute();
 
+  const calcCta = $('#calcContactBtn');
+  if (calcCta){
+    calcCta.addEventListener('click', ()=>{
+      const target = document.getElementById('contact');
+      if (!target) return;
+      try {
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      } catch (err) {
+        target.scrollIntoView(true);
+      }
+      const focusable = target.querySelector('input, textarea, button, select');
+      if (focusable){
+        setTimeout(()=>{
+          try {
+            focusable.focus();
+          } catch (e) {
+            /* noop */
+          }
+        }, 600);
+      }
+    });
+  }
+
   // Card glow
   $$('.card').forEach(card=>{
     card.addEventListener('mousemove', (e)=>{
