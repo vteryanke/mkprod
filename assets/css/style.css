@@ -61,8 +61,8 @@ background-size:36px 36px;mask:linear-gradient(180deg,transparent,white 20%,whit
 .card h3{margin-bottom:8px}
 .card p{font-size:16px}
 .timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
-.step{position:relative;padding:18px;border-radius:16px;border:1px solid rgba(0,240,255,.18);background:linear-gradient(180deg,rgba(0,240,255,.03),rgba(0,240,255,.01))}
-.step::before{counter-increment:step;content:counter(step);position:absolute;top:-10px;left:-10px;width:32px;height:32px;border-radius:8px;background:linear-gradient(180deg,var(--neon),var(--neon-2));display:grid;place-items:center;color:#000;font-weight:800;box-shadow:0 8px 24px rgba(122,92,255,.4)}
+.step{position:relative;padding:26px 20px 22px 76px;border-radius:16px;border:1px solid rgba(0,240,255,.18);background:linear-gradient(180deg,rgba(0,240,255,.03),rgba(0,240,255,.01))}
+.step::before{counter-increment:step;content:counter(step);position:absolute;top:24px;left:24px;width:36px;height:36px;border-radius:10px;background:linear-gradient(180deg,var(--neon),var(--neon-2));display:grid;place-items:center;color:#000;font-weight:800;box-shadow:0 8px 24px rgba(122,92,255,.4)}
 .step h4{margin:0 0 6px}
 .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .price{padding:22px;border-radius:18px;border:1px solid rgba(0,240,255,.25);background:linear-gradient(180deg,rgba(0,240,255,.05),rgba(0,240,255,.01));position:relative}
