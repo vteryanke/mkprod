@@ -282,6 +282,7 @@
         <div class="num" id="totalOut">—</div>
         <div id="breakdown" style="margin-top:8px"></div>
         <p class="note" style="margin-top:8px">Оценка не публичная оферта. Итог зависит от ТЗ, нишевой конкуренции и сроков.</p>
+        <button class="btn cta" type="button" id="calcContactBtn" style="margin-top:16px">Получить точную смету</button>
       </div>
     </div>
   </div>
