@@ -385,6 +385,31 @@ h2::after{filter:drop-shadow(0 0 8px rgba(0,240,255,.35))}
   gap: 10px; /* компактнее вертикальный ритм */
 }
 
+/* Плавное появление текста в первом блоке */
+.hero .hero-wrap > div:first-child > *{
+  opacity:0;
+  transform:translateY(18px);
+  animation:heroIntro .9s ease-out forwards;
+}
+.hero .hero-wrap > div:first-child .kicker{animation-delay:.1s}
+.hero .hero-wrap > div:first-child h1{animation-delay:.22s}
+.hero .hero-wrap > div:first-child .lead{animation-delay:.34s}
+.hero .hero-wrap > div:first-child .badges{animation-delay:.58s}
+.hero .hero-wrap > div:first-child p:has(.cta){animation-delay:.46s}
+
+@keyframes heroIntro{
+  from{opacity:0;transform:translateY(18px)}
+  to{opacity:1;transform:none}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .hero .hero-wrap > div:first-child > *{
+    animation:none;
+    opacity:1;
+    transform:none;
+  }
+}
+
 /* Сжимаем отступ под лидом, чтобы CTA прилипла визуально к тексту */
 .lead{ margin-bottom: 6px; }
 
