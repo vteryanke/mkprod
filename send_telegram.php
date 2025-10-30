@@ -76,6 +76,56 @@ function mkp_curl_file($path, $mime, $name) {
   return new CURLFile($path, $mime, $name);
 }
 
+function mkp_normalize_file_inputs($files) {
+  $normalized = [];
+
+  if (!is_array($files) || !isset($files['name'])) {
+    return $normalized;
+  }
+
+  $names    = $files['name'];
+  $tmpNames = $files['tmp_name'] ?? [];
+  $types    = $files['type'] ?? [];
+  $errors   = $files['error'] ?? [];
+  $sizes    = $files['size'] ?? [];
+
+  if (!is_array($names)) {
+    $names    = [$names];
+    $tmpNames = [$tmpNames];
+    $types    = [$types];
+    $errors   = [$errors];
+    $sizes    = [$sizes];
+  }
+
+  $count = count($names);
+
+  for ($i = 0; $i < $count; $i++) {
+    $name = $names[$i];
+    if ($name === null || $name === '') {
+      continue;
+    }
+
+    $error = $errors[$i] ?? UPLOAD_ERR_OK;
+    if ($error !== UPLOAD_ERR_OK) {
+      continue;
+    }
+
+    $tmp = $tmpNames[$i] ?? '';
+    if ($tmp === '' || !is_uploaded_file($tmp)) {
+      continue;
+    }
+
+    $normalized[] = [
+      'name' => $name,
+      'tmp'  => $tmp,
+      'size' => (int)($sizes[$i] ?? 0),
+      'type' => $types[$i] ?? '',
+    ];
+  }
+
+  return $normalized;
+}
+
 function tg_log_error($context, $payload) {
   $line = sprintf("%s %s %s\n", date('c'), $context, $payload);
   @file_put_contents(__DIR__ . '/telegram-error.log', $line, FILE_APPEND);
@@ -229,85 +279,108 @@ if (empty($sendMessage['ok'])) {
 
 
 // === ОТПРАВКА ПРИКРЕПЛЁННЫХ ФАЙЛОВ ===
-if (!empty($_FILES['files']['name'][0])) {
-  $uploads = [];
-  $maxSize = 20 * 1024 * 1024; // 20 МБ
-  $allowedExt = [
-    'jpg','jpeg','png','webp','gif',
-    'pdf','doc','docx','txt','rtf','odt',
-    'ppt','pptx','xls','xlsx','csv',
-    'zip','rar','7z','gz','tar',
-    'mp3','wav','ogg','m4a','aac',
-    'mp4','mov','avi','mkv'
-  ];
+$sentFiles = 0;
+$totalUploads = 0;
 
-  $fileCount = count($_FILES['files']['name']);
-  for ($i = 0; $i < $fileCount; $i++) {
-    $tmp  = $_FILES['files']['tmp_name'][$i];
-    $name = $_FILES['files']['name'][$i];
-    $size = $_FILES['files']['size'][$i];
-
-    if (!is_uploaded_file($tmp)) continue;
-    if ($size > $maxSize) continue;
-
-    $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-    if ($ext && !in_array($ext, $allowedExt, true)) continue;
-
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime  = $finfo ? finfo_file($finfo, $tmp) : null;
-    if ($finfo) finfo_close($finfo);
-    if (!$mime) $mime = 'application/octet-stream';
-
-    $uploads[] = [
-      'tmp'  => $tmp,
-      'name' => $name,
-      'mime' => $mime
-    ];
+$filesField = $_FILES['files'] ?? null;
+if ($filesField === null) {
+  foreach ($_FILES as $payload) {
+    if (!empty($payload['name'])) {
+      $filesField = $payload;
+      break;
+    }
   }
+}
 
-  if (!empty($uploads)) {
-    $sentFiles = 0;
-    $totalUploads = count($uploads);
-    $chunks = array_chunk($uploads, 10); // Telegram media group ограничен 10 файлами
+if (!empty($filesField)) {
+  $rawUploads = mkp_normalize_file_inputs($filesField);
 
-    foreach ($chunks as $chunk) {
-      if (count($chunk) === 1) {
-        if (tg_send_document($chat_id, $chunk[0])) {
-          $sentFiles++;
-        }
+  if (!empty($rawUploads)) {
+    $maxSize = 20 * 1024 * 1024; // 20 МБ
+    $allowedExt = [
+      'jpg','jpeg','png','webp','gif',
+      'pdf','doc','docx','txt','rtf','odt',
+      'ppt','pptx','xls','xlsx','csv',
+      'zip','rar','7z','gz','tar',
+      'mp3','wav','ogg','m4a','aac',
+      'mp4','mov','avi','mkv'
+    ];
+
+    $uploads = [];
+    $finfo = function_exists('finfo_open') ? @finfo_open(FILEINFO_MIME_TYPE) : false;
+
+    foreach ($rawUploads as $file) {
+      if ($file['size'] > $maxSize) {
         continue;
       }
 
-      if (tg_send_media_group($chat_id, $chunk)) {
-        $sentFiles += count($chunk);
+      $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+      if ($ext && !in_array($ext, $allowedExt, true)) {
         continue;
       }
 
-      foreach ($chunk as $file) {
-        if (tg_send_document($chat_id, $file)) {
-          $sentFiles++;
-        }
+      $mime = $finfo ? @finfo_file($finfo, $file['tmp']) : null;
+      if (!$mime && !empty($file['type'])) {
+        $mime = $file['type'];
       }
+      if (!$mime) {
+        $mime = 'application/octet-stream';
+      }
+
+      $uploads[] = [
+        'tmp'  => $file['tmp'],
+        'name' => $file['name'],
+        'mime' => $mime,
+      ];
     }
 
-    if ($sentFiles < $totalUploads) {
-      tg_log_error('attachments', json_encode([
-        'total' => $totalUploads,
-        'sent'  => $sentFiles,
-      ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    if ($finfo) {
+      finfo_close($finfo);
+    }
 
-      if ($sentFiles === 0) {
-        echo json_encode(['ok'=>false,'msg'=>'Заявка отправлена, но файлы прикрепить не удалось.']);
-        exit;
+    if (!empty($uploads)) {
+      $totalUploads = count($uploads);
+      $chunks = array_chunk($uploads, 10); // Telegram media group ограничен 10 файлами
+
+      foreach ($chunks as $chunk) {
+        if (count($chunk) === 1) {
+          if (tg_send_document($chat_id, $chunk[0])) {
+            $sentFiles++;
+          }
+          continue;
+        }
+
+        if (tg_send_media_group($chat_id, $chunk)) {
+          $sentFiles += count($chunk);
+          continue;
+        }
+
+        foreach ($chunk as $file) {
+          if (tg_send_document($chat_id, $file)) {
+            $sentFiles++;
+          }
+        }
+      }
+
+      if ($sentFiles < $totalUploads) {
+        tg_log_error('attachments', json_encode([
+          'total' => $totalUploads,
+          'sent'  => $sentFiles,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+
+        if ($sentFiles === 0) {
+          echo json_encode(['ok'=>false,'msg'=>'Заявка отправлена, но файлы прикрепить не удалось.']);
+          exit;
+        }
       }
     }
   }
 }
 
 $responseMsg = 'Отправлено';
-if (!empty($sentFiles) && isset($totalUploads) && $sentFiles === $totalUploads) {
+if ($totalUploads > 0 && $sentFiles === $totalUploads) {
   $responseMsg = 'Отправлено вместе с файлами';
-} elseif (!empty($sentFiles) && isset($totalUploads) && $sentFiles < $totalUploads) {
+} elseif ($totalUploads > 0 && $sentFiles > 0 && $sentFiles < $totalUploads) {
   $responseMsg = 'Отправлено, но часть файлов не загрузилась.';
 }
 
