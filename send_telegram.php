@@ -23,20 +23,16 @@ function tg_api($method, $params) {
 
 
 // === ДАННЫЕ ИЗ ФОРМЫ ===
-$name    = trim($_POST['name'] ?? '');
-$email   = trim($_POST['email'] ?? '');
 $contact = trim($_POST['contact'] ?? '');
 $msg     = trim($_POST['message'] ?? '');
 
-if ($name==='' && $contact==='') {
-  echo json_encode(['ok'=>false,'msg'=>'Форма пустая']);
+if ($contact==='') {
+  echo json_encode(['ok'=>false,'msg'=>'Не указан контакт для связи']);
   exit;
 }
 
 // === ТЕКСТ СООБЩЕНИЯ ===
 $text  = "📬 <b>Новая заявка с сайта MKProd</b>\n\n";
-$text .= "👤 Имя: {$name}\n";
-$text .= "📧 Email: {$email}\n";
 $text .= "☎ Контакт: {$contact}\n";
 if ($msg!=='') $text .= "💬 Сообщение:\n{$msg}\n";
 
