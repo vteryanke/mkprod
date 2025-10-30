@@ -335,8 +335,6 @@
       <h2><?php echo esc_html( get_theme_mod('mkprod_contact_title','Готов обсудить ваш проект') ); ?></h2>
       <p><?php echo esc_html( get_theme_mod('mkprod_contact_subtitle','Оставьте контакты — вернусь с первичными идеями и оценкой.') ); ?></p>
       <form id="contactForm" class="input" enctype="multipart/form-data" novalidate>
-  <input type="text" name="name" placeholder="Имя" required>
-  <input type="email" name="email" placeholder="Email">
   <input type="text" name="contact" placeholder="Телефон или Telegram" required>
   <textarea name="message" placeholder="Коротко о проекте..."></textarea>
 
@@ -359,6 +357,13 @@
   </button>
   <div id="formMsg" class="form-msg" style="margin-top:10px;font-size:14px;"></div>
 </form>
+
+<div id="successOverlay" class="form-overlay" role="alertdialog" aria-modal="true" aria-hidden="true">
+  <div class="form-overlay__content">
+    <p class="form-overlay__text">Ваша заявка принята, с Вами свяжутся в ближайшее время. Звонок поступит с номера +79222631802.</p>
+    <button type="button" class="btn form-overlay__btn" id="overlayClose">Хорошо</button>
+  </div>
+</div>
 
 <style>
 @keyframes spin {to{transform:rotate(360deg)}}
@@ -384,6 +389,27 @@
   box-shadow:0 0 8px rgba(0,240,255,.6);
   transition:width .25s ease;}
 .btn .btn-text{animation:neonGlow 2s ease-in-out infinite alternate;}
+.form-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,8,15,.82);backdrop-filter:blur(4px);z-index:1000;}
+.form-overlay.show{display:flex;}
+.form-overlay__content{max-width:420px;width:100%;background:rgba(12,18,30,.95);border:1px solid rgba(0,240,255,.4);border-radius:20px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);}
+.form-overlay__text{margin:0 0 24px;font-size:18px;line-height:1.4;color:#fff;}
+.form-overlay__btn{
+  width:100%;
+  justify-content:center;
+  border:none;
+  background:linear-gradient(90deg,#00f0ff,#7a5cff);
+  color:#020813;
+  font-weight:700;
+  box-shadow:0 16px 40px rgba(0,240,255,.35),0 0 0 1px rgba(0,240,255,.25) inset;
+}
+.form-overlay__btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 20px 46px rgba(0,240,255,.45),0 0 0 1px rgba(0,240,255,.3) inset;
+}
+.form-overlay__btn:focus-visible{
+  outline:2px solid rgba(255,255,255,.7);
+  outline-offset:3px;
+}
 </style>
 
 <script>
@@ -395,6 +421,32 @@ const btn = document.getElementById('submitBtn');
 const btnText = btn.querySelector('.btn-text');
 const loader = btn.querySelector('.loader');
 const msgBox = document.getElementById('formMsg');
+const successOverlay = document.getElementById('successOverlay');
+const overlayClose = document.getElementById('overlayClose');
+
+const closeOverlay = ()=>{
+  successOverlay.classList.remove('show');
+  successOverlay.setAttribute('aria-hidden','true');
+  btn.focus();
+};
+
+const showOverlay = ()=>{
+  successOverlay.classList.add('show');
+  successOverlay.setAttribute('aria-hidden','false');
+  overlayClose.focus();
+};
+
+overlayClose.addEventListener('click', closeOverlay);
+successOverlay.addEventListener('click', e=>{
+  if(e.target === successOverlay){
+    closeOverlay();
+  }
+});
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape' && successOverlay.classList.contains('show')){
+    closeOverlay();
+  }
+});
 
 // создаём неоновую полосу
 const progressWrap = document.createElement('div');
@@ -465,9 +517,10 @@ form.addEventListener('submit', async e=>{
     try {
       const json = JSON.parse(xhr.responseText);
       if(json.ok){
-        msgBox.textContent = '✅ Заявка отправлена! Свяжусь в ближайшее время.';
-        msgBox.classList.add('success');
         form.reset(); dzList.innerHTML='';
+        msgBox.textContent = '';
+        msgBox.className = 'form-msg';
+        showOverlay();
       } else {
         msgBox.textContent = '❌ Ошибка: '+(json.msg || 'не удалось отправить.');
         msgBox.classList.add('error');
