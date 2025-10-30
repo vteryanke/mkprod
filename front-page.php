@@ -393,7 +393,9 @@
 .form-overlay.show{display:flex;}
 .form-overlay__content{max-width:420px;width:100%;background:rgba(12,18,30,.95);border:1px solid rgba(0,240,255,.4);border-radius:20px;padding:32px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45);}
 .form-overlay__text{margin:0 0 24px;font-size:18px;line-height:1.4;color:#fff;}
-.form-overlay__btn{width:100%;justify-content:center;}
+.form-overlay__btn{width:100%;justify-content:center;border:none;background:linear-gradient(90deg,var(--neon),var(--neon-2));color:#020813;font-weight:700;box-shadow:0 12px 36px rgba(0,240,255,.35),0 0 0 1px rgba(0,240,255,.18) inset;}
+.form-overlay__btn:hover{transform:translateY(-2px);box-shadow:0 16px 42px rgba(0,240,255,.45),0 0 0 1px rgba(0,240,255,.25) inset;}
+.form-overlay__btn:focus-visible{outline:2px solid rgba(255,255,255,.6);outline-offset:3px;}
 </style>
 
 <script>
