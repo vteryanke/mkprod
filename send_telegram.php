@@ -89,39 +89,16 @@ if (!empty($_FILES['files']['name'][0])) {
   }
 
   if (!empty($uploads)) {
-    $chunks = array_chunk($uploads, 10); // Telegram media group ограничен 10 файлами
+    foreach ($uploads as $file) {
+      $cFile = mkp_curl_file($file['tmp'], $file['mime'], $file['name']);
 
-    foreach ($chunks as $chunk) {
-      if (count($chunk) === 1) {
-        $file = $chunk[0];
-        $cFile = mkp_curl_file($file['tmp'], $file['mime'], $file['name']);
-        tg_api('sendDocument', [
-          'chat_id'  => $chat_id,
-          'caption'  => "📎 {$file['name']}",
-          'document' => $cFile
-        ]);
-        continue;
-      }
+      tg_api('sendDocument', [
+        'chat_id'  => $chat_id,
+        'caption'  => "📎 {$file['name']}",
+        'document' => $cFile
+      ]);
 
-      $params = [
-        'chat_id' => $chat_id
-      ];
-      $media = [];
-
-      foreach ($chunk as $idx => $file) {
-        $field = 'file' . $idx;
-        $params[$field] = mkp_curl_file($file['tmp'], $file['mime'], $file['name']);
-        $media[] = [
-          'type'    => 'document',
-          'media'   => 'attach://' . $field,
-          'caption' => "📎 {$file['name']}"
-        ];
-      }
-
-      $params['media'] = json_encode($media, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-      tg_api('sendMediaGroup', $params);
-
-      // небольшая пауза для избежания ограничения Flood control
+      // Небольшая пауза, чтобы не упереться в ограничение Flood control
       usleep(350000);
     }
   }
