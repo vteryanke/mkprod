@@ -293,29 +293,33 @@ if ($filesField === null) {
 }
 
 if (!empty($filesField)) {
+  $initialUploads = 0;
+  $filteredCount = 0;
   $rawUploads = mkp_normalize_file_inputs($filesField);
 
   if (!empty($rawUploads)) {
-    $maxSize = 20 * 1024 * 1024; // 20 МБ
-    $allowedExt = [
-      'jpg','jpeg','png','webp','gif',
-      'pdf','doc','docx','txt','rtf','odt',
-      'ppt','pptx','xls','xlsx','csv',
-      'zip','rar','7z','gz','tar',
-      'mp3','wav','ogg','m4a','aac',
-      'mp4','mov','avi','mkv'
+    $maxSize = 45 * 1024 * 1024; // 45 МБ, лимит ботов Telegram ≈ 50 МБ
+    $blockedExt = [
+      'php','phtml','php3','php4','php5','php7','phps','phar',
+      'exe','msi','com','bat','cmd','scr','js','sh','cgi','pl','jar','dll'
     ];
 
     $uploads = [];
+    $filteredBySize = [];
+    $filteredByExt  = [];
+    $initialUploads = count($rawUploads);
+    $filteredCount  = 0;
     $finfo = function_exists('finfo_open') ? @finfo_open(FILEINFO_MIME_TYPE) : false;
 
     foreach ($rawUploads as $file) {
       if ($file['size'] > $maxSize) {
+        $filteredBySize[] = $file['name'];
         continue;
       }
 
       $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-      if ($ext && !in_array($ext, $allowedExt, true)) {
+      if ($ext && in_array($ext, $blockedExt, true)) {
+        $filteredByExt[] = $file['name'];
         continue;
       }
 
@@ -340,6 +344,7 @@ if (!empty($filesField)) {
 
     if (!empty($uploads)) {
       $totalUploads = count($uploads);
+      $filteredCount = max(0, $initialUploads - $totalUploads);
       $chunks = array_chunk($uploads, 10); // Telegram media group ограничен 10 файлами
 
       foreach ($chunks as $chunk) {
@@ -373,15 +378,35 @@ if (!empty($filesField)) {
           exit;
         }
       }
+      if ($filteredCount > 0 && (!empty($filteredBySize) || !empty($filteredByExt))) {
+        tg_log_error('attachments-filter', json_encode([
+          'initial' => $initialUploads,
+          'accepted'=> $totalUploads,
+          'size'    => $filteredBySize,
+          'ext'     => $filteredByExt,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+      }
+    } elseif ($initialUploads > 0) {
+      tg_log_error('attachments-filter', json_encode([
+        'initial' => $initialUploads,
+        'size'    => $filteredBySize,
+        'ext'     => $filteredByExt,
+      ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
   }
 }
 
 $responseMsg = 'Отправлено';
 if ($totalUploads > 0 && $sentFiles === $totalUploads) {
+  if (!empty($filteredCount ?? 0)) {
+    $responseMsg = 'Отправлено, но часть файлов отклонена (размер или формат).';
+  } else {
   $responseMsg = 'Отправлено вместе с файлами';
+  }
 } elseif ($totalUploads > 0 && $sentFiles > 0 && $sentFiles < $totalUploads) {
   $responseMsg = 'Отправлено, но часть файлов не загрузилась.';
+} elseif ($totalUploads === 0 && !empty($initialUploads ?? 0)) {
+  $responseMsg = 'Отправлено, но файлы отклонены (размер или формат).';
 }
 
 echo json_encode(['ok'=>true,'msg'=>$responseMsg]);
