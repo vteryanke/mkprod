@@ -71,6 +71,8 @@ $allowed_video_tags = array(
   ),
 );
 
+$theme_uri = trailingslashit( get_template_directory_uri() );
+
 $hero_kicker_raw = (string) $fetch( 'mkp_hero_kicker', '' );
 $hero_title_raw  = (string) $fetch( 'mkp_hero_title', '' );
 $hero_lead_raw   = (string) $fetch( 'mkp_hero_lead', '' );
@@ -118,22 +120,22 @@ if ( ! is_array( $top_cards ) || empty( $top_cards ) ) {
     array(
       'title'       => 'Анализ ниши и конкурентов',
       'description' => 'Подбираем стратегию, семантику и точки роста для конкретной ниши. Составляем карту запросов и бенчмарки KPI.',
-      'icon'        => '',
+      'icon'        => $theme_uri . 'assets/images/seo-dalle-analysis.svg',
     ),
     array(
       'title'       => 'Техническое SEO',
       'description' => 'Устраняем ошибки, ускоряем загрузку, оптимизируем индексацию и сканирование. Контроль внедрения чек-листов.',
-      'icon'        => '',
+      'icon'        => $theme_uri . 'assets/images/seo-dalle-technical.svg',
     ),
     array(
       'title'       => 'Контент и структура',
       'description' => 'Создаём релевантные тексты, усиливаем перелинковку и повышаем вовлечённость. Обновляем ключевые посадочные.',
-      'icon'        => '',
+      'icon'        => $theme_uri . 'assets/images/seo-dalle-content.svg',
     ),
     array(
       'title'       => 'Поведенческие факторы и аналитика',
       'description' => 'Настраиваем цели, строим отчёты и сценарии. Сайт растёт по позициям, а клиенты остаются и покупают.',
-      'icon'        => '',
+      'icon'        => $theme_uri . 'assets/images/seo-dalle-analytics.svg',
     ),
   );
 }
@@ -189,18 +191,22 @@ if ( ! is_array( $advantages ) || empty( $advantages ) ) {
     array(
       'title'       => 'Работаем только по белым методам',
       'description' => 'Без рискованных сеток и санкций. Соблюдаем гайды поисковых систем и юридические требования.',
+      'image'       => $theme_uri . 'assets/images/seo-dalle-shield.svg',
     ),
     array(
       'title'       => 'Премиальный подход и прозрачная отчётность',
       'description' => 'Показываем в цифрах, что сделано и что даёт рост. Доступ к дашбордам 24/7 и регулярные созвоны.',
+      'image'       => $theme_uri . 'assets/images/seo-dalle-dash.svg',
     ),
     array(
       'title'       => 'Личный контроль Михаила Киселёва',
       'description' => 'Все ключевые решения — лично. Команда MKProd подключается под конкретные задачи и отвечает сроком.',
+      'image'       => $theme_uri . 'assets/images/seo-dalle-lead.svg',
     ),
     array(
       'title'       => 'Реальные отзывы клиентов',
       'description' => 'Показываем кейсы и открытые отзывы. Демонстрируем динамику позиций и экономический эффект.',
+      'image'       => $theme_uri . 'assets/images/seo-dalle-reviews.svg',
     ),
   );
 }
@@ -312,12 +318,15 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
           $icon  = isset( $card['icon'] ) ? $card['icon'] : '';
           ?>
           <article class="seo-step" data-reveal>
-            <div class="seo-step__icon">
-              <?php if ( $icon ) : ?>
-                <img src="<?php echo esc_url( $icon ); ?>" alt="" loading="lazy" />
-              <?php else : ?>
-                <span aria-hidden="true">✦</span>
-              <?php endif; ?>
+            <div class="seo-step__visual">
+              <div class="seo-step__shine" aria-hidden="true"></div>
+              <div class="seo-step__icon">
+                <?php if ( $icon ) : ?>
+                  <img src="<?php echo esc_url( $icon ); ?>" alt="" loading="lazy" />
+                <?php else : ?>
+                  <span aria-hidden="true">✦</span>
+                <?php endif; ?>
+              </div>
             </div>
             <?php if ( $title ) : ?>
               <h3><?php echo esc_html( $title ); ?></h3>
@@ -403,14 +412,25 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
         <?php foreach ( $advantages as $adv ) :
           $title = isset( $adv['title'] ) ? $adv['title'] : '';
           $desc  = isset( $adv['description'] ) ? $adv['description'] : '';
+          $image = isset( $adv['image'] ) ? $adv['image'] : ( isset( $adv['icon'] ) ? $adv['icon'] : '' );
           ?>
           <article class="seo-adv-card" data-reveal>
-            <?php if ( $title ) : ?>
-              <h3><?php echo esc_html( $title ); ?></h3>
-            <?php endif; ?>
-            <?php if ( $desc ) : ?>
-              <p><?php echo esc_html( $desc ); ?></p>
-            <?php endif; ?>
+            <div class="seo-adv-card__visual" aria-hidden="true">
+              <div class="seo-adv-card__glow"></div>
+              <?php if ( $image ) : ?>
+                <img src="<?php echo esc_url( $image ); ?>" alt="" loading="lazy" />
+              <?php else : ?>
+                <span>✶</span>
+              <?php endif; ?>
+            </div>
+            <div class="seo-adv-card__body">
+              <?php if ( $title ) : ?>
+                <h3><?php echo esc_html( $title ); ?></h3>
+              <?php endif; ?>
+              <?php if ( $desc ) : ?>
+                <p><?php echo esc_html( $desc ); ?></p>
+              <?php endif; ?>
+            </div>
           </article>
         <?php endforeach; ?>
       </div>
@@ -418,68 +438,73 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
   </section>
   <div class="section-divider" aria-hidden="true"></div>
   <section id="contact" class="section seo-contact">
-    <div class="container contact">
-      <div class="seo-contact__intro" data-reveal>
-        <h2><?php echo esc_html( get_theme_mod( 'mkprod_contact_title', 'Готов обсудить ваш проект' ) ); ?></h2>
-        <p><?php echo esc_html( get_theme_mod( 'mkprod_contact_subtitle', 'Оставьте контакты — вернусь с первичными идеями и оценкой.' ) ); ?></p>
-        <ul class="seo-contact__benefits">
-          <li>Созвон с Михаилом Киселёвым в ближайшие 24 часа</li>
-          <li>Разбор текущего сайта и быстрых точек роста</li>
-          <li>Пошаговый план внедрения SEO-улучшений</li>
-        </ul>
+    <div class="container">
+      <div class="seo-contact__grid">
+        <div class="seo-contact__intro" data-reveal>
+          <h2><?php echo esc_html( get_theme_mod( 'mkprod_contact_title', 'Готов обсудить ваш проект' ) ); ?></h2>
+          <p><?php echo esc_html( get_theme_mod( 'mkprod_contact_subtitle', 'Оставьте контакты — вернусь с первичными идеями и оценкой.' ) ); ?></p>
+          <ul class="seo-contact__benefits">
+            <li>Созвон с Михаилом Киселёвым в ближайшие 24 часа</li>
+            <li>Разбор текущего сайта и быстрых точек роста</li>
+            <li>Пошаговый план внедрения SEO-улучшений</li>
+          </ul>
+        </div>
+        <div class="seo-contact__panel">
+          <div class="card mkp-contacts" data-reveal>
+            <h3>Контакты</h3>
+            <svg class="mkp-contacts-wave" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mkpG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#7a5cff"/></linearGradient><filter id="mkpGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M0,38 C40,18 80,48 120,26 C160,8 200,38 240,18" fill="none" stroke="url(#mkpG)" stroke-width="3" filter="url(#mkpGlow)"/></svg>
+            <p><b>MKProd</b> · Команда</p>
+            <ul class="seo-contact__links">
+              <?php if ( get_theme_mod( 'mkprod_vk' ) ) : ?>
+                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_vk' ) ); ?>" target="_blank" rel="noopener"><span class="ico">🔗</span> VK — сообщество MKProd</a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_telegram' ) ) : ?>
+                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_telegram' ) ); ?>" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram — @mkprod</a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_email' ) ) : ?>
+                <li><a class="badge" href="mailto:<?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📧</span> <?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?></a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_phone' ) ) : ?>
+                <li><a class="badge" href="tel:<?php echo preg_replace( '/[^0-9+]/', '', get_theme_mod( 'mkprod_phone' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📞</span> <?php echo get_theme_mod( 'mkprod_phone' ); ?></a></li>
+              <?php endif; ?>
+            </ul>
+            <p class="note">Во время интеграции подставлю реальные ссылки и подключу форму к почте/CRM.</p>
+            <div class="mkp-contacts-grid"></div>
+          </div>
+          <div class="seo-contact__form" data-reveal>
+            <div class="seo-contact__form-glow" aria-hidden="true"></div>
+            <form id="contactForm" class="input" enctype="multipart/form-data" novalidate data-global-form="1" data-endpoint="<?php echo esc_url( get_template_directory_uri() . '/send_telegram.php' ); ?>">
+              <input type="text" name="name" placeholder="Имя" required>
+              <input type="text" name="contact" placeholder="Телефон или Telegram" required>
+              <textarea name="message" placeholder="Расскажите о проекте…"></textarea>
+              <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0">
+              <div id="dropzone" class="mkp-dropzone" aria-label="Прикрепите файлы">
+                <input id="files" name="files[]" type="file" multiple hidden>
+                <div class="dz-cta">
+                  <span class="dz-ico">⬆</span>
+                  <div>Перетащите файлы сюда или <button type="button" class="dz-btn">выберите</button></div>
+                  <small>PDF, DOCX, PNG, JPG — до 20 МБ</small>
+                </div>
+                <ul class="dz-list" id="dzList"></ul>
+              </div>
+              <div class="seo-contact__submit">
+                <button class="btn" type="submit" id="submitBtn">
+                  <span class="btn-text">Отправить</span>
+                  <span class="loader" style="display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#00f0ff;border-radius:50%;animation:spin 0.6s linear infinite"></span>
+                </button>
+                <div class="progress-wrap" aria-hidden="true" hidden>
+                  <div class="progress-bar"></div>
+                </div>
+              </div>
+              <div id="formMsg" class="form-msg" style="margin-top:10px;font-size:14px;"></div>
+            </form>
+          </div>
+        </div>
       </div>
-      <div class="card mkp-contacts" data-reveal>
-        <h3>Контакты</h3>
-        <svg class="mkp-contacts-wave" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mkpG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#7a5cff"/></linearGradient><filter id="mkpGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M0,38 C40,18 80,48 120,26 C160,8 200,38 240,18" fill="none" stroke="url(#mkpG)" stroke-width="3" filter="url(#mkpGlow)"/></svg>
-        <p><b>MKProd</b> · Команда</p>
-        <ul style="list-style:none;padding:0;margin:10px 0 0;display:flex;flex-direction:column;gap:8px">
-          <?php if ( get_theme_mod( 'mkprod_vk' ) ) : ?>
-            <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_vk' ) ); ?>" target="_blank" rel="noopener"><span class="ico">🔗</span> VK — сообщество MKProd</a></li>
-          <?php endif; ?>
-          <?php if ( get_theme_mod( 'mkprod_telegram' ) ) : ?>
-            <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_telegram' ) ); ?>" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram — @mkprod</a></li>
-          <?php endif; ?>
-          <?php if ( get_theme_mod( 'mkprod_email' ) ) : ?>
-            <li><a class="badge" href="mailto:<?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📧</span> <?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?></a></li>
-          <?php endif; ?>
-          <?php if ( get_theme_mod( 'mkprod_phone' ) ) : ?>
-            <li><a class="badge" href="tel:<?php echo preg_replace( '/[^0-9+]/', '', get_theme_mod( 'mkprod_phone' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📞</span> <?php echo get_theme_mod( 'mkprod_phone' ); ?></a></li>
-          <?php endif; ?>
-        </ul>
-        <p class="note" style="margin-top:12px">Во время интеграции подставлю реальные ссылки и подключу форму к почте/CRM.</p>
-        <div class="mkp-contacts-grid"></div>
-      </div>
-      <div class="seo-contact__form" data-reveal>
-        <form id="contactForm" class="input" enctype="multipart/form-data" novalidate data-global-form="1" data-endpoint="<?php echo esc_url( get_template_directory_uri() . '/send_telegram.php' ); ?>">
-          <input type="text" name="name" placeholder="Имя" required>
-          <input type="text" name="contact" placeholder="Телефон или Telegram" required>
-          <textarea name="message" placeholder="Расскажите о проекте…"></textarea>
-          <input type="text" name="website" id="website" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;opacity:0">
-          <div id="dropzone" class="mkp-dropzone" aria-label="Прикрепите файлы">
-            <input id="files" name="files[]" type="file" multiple hidden>
-            <div class="dz-cta">
-              <span class="dz-ico">⬆</span>
-              <div>Перетащите файлы сюда или <button type="button" class="dz-btn">выберите</button></div>
-              <small>PDF, DOCX, PNG, JPG — до 20 МБ</small>
-            </div>
-            <ul class="dz-list" id="dzList"></ul>
-          </div>
-          <div class="seo-contact__submit">
-            <button class="btn" type="submit" id="submitBtn">
-              <span class="btn-text">Отправить</span>
-              <span class="loader" style="display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#00f0ff;border-radius:50%;animation:spin 0.6s linear infinite"></span>
-            </button>
-            <div class="progress-wrap" aria-hidden="true" hidden>
-              <div class="progress-bar"></div>
-            </div>
-          </div>
-          <div id="formMsg" class="form-msg" style="margin-top:10px;font-size:14px;"></div>
-        </form>
-        <div id="successOverlay" class="form-overlay" role="alertdialog" aria-modal="true" aria-hidden="true">
-          <div class="form-overlay__content">
-            <p class="form-overlay__text">Ваша заявка принята, с Вами свяжутся в ближайшее время. Звонок поступит с номера +79222631802.</p>
-            <button type="button" class="btn form-overlay__btn" id="overlayClose">Хорошо</button>
-          </div>
+      <div id="successOverlay" class="form-overlay" role="alertdialog" aria-modal="true" aria-hidden="true">
+        <div class="form-overlay__content">
+          <p class="form-overlay__text">Ваша заявка принята, с Вами свяжутся в ближайшее время. Звонок поступит с номера +79222631802.</p>
+          <button type="button" class="btn form-overlay__btn" id="overlayClose">Хорошо</button>
         </div>
       </div>
     </div>

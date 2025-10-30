@@ -1,0 +1,30 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tech-bg" x1="210" y1="20" x2="40" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0C1A3F"/>
+      <stop offset="1" stop-color="#030712"/>
+    </linearGradient>
+    <linearGradient id="tech-line" x1="40" y1="200" x2="200" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#7A5CFF"/>
+    </linearGradient>
+    <filter id="tech-glow" x="-60" y="-60" width="360" height="360" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+    </filter>
+  </defs>
+  <rect width="240" height="240" rx="36" fill="url(#tech-bg)"/>
+  <rect x="26" y="26" width="188" height="188" rx="32" stroke="rgba(0,240,255,0.3)" stroke-dasharray="12 16"/>
+  <g opacity="0.45">
+    <path d="M56 74H184" stroke="rgba(0,240,255,0.18)" stroke-width="2"/>
+    <path d="M56 98H184" stroke="rgba(0,240,255,0.14)" stroke-width="2"/>
+    <path d="M56 122H184" stroke="rgba(0,240,255,0.12)" stroke-width="2"/>
+  </g>
+  <g filter="url(#tech-glow)">
+    <path d="M82 104H158V136L134 160L158 184V206H82V184L106 160L82 136V104Z" fill="#08162E" stroke="url(#tech-line)" stroke-width="6" stroke-linejoin="round"/>
+  </g>
+  <path d="M120 80C137.673 80 152 65.6731 152 48" stroke="url(#tech-line)" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="120" cy="48" r="16" fill="#08162E" stroke="url(#tech-line)" stroke-width="6"/>
+  <circle cx="120" cy="192" r="20" fill="#08162E" stroke="url(#tech-line)" stroke-width="6"/>
+  <path d="M120 172L120 204" stroke="rgba(0,240,255,0.6)" stroke-width="4" stroke-linecap="round"/>
+</svg>

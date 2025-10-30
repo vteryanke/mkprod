@@ -1,0 +1,23 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="lead-bg" x1="180" y1="30" x2="50" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0A1934"/>
+      <stop offset="1" stop-color="#040912"/>
+    </linearGradient>
+    <linearGradient id="lead-line" x1="60" y1="190" x2="160" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#7A5CFF"/>
+    </linearGradient>
+    <filter id="lead-glow" x="-60" y="-60" width="340" height="340" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+    </filter>
+  </defs>
+  <rect width="220" height="220" rx="32" fill="url(#lead-bg)"/>
+  <g filter="url(#lead-glow)">
+    <path d="M110 54C124 54 150 64 150 92C150 120 130 150 110 174C90 150 70 120 70 92C70 64 96 54 110 54Z" fill="#07142C" stroke="url(#lead-line)" stroke-width="8"/>
+  </g>
+  <circle cx="110" cy="92" r="18" fill="#07142C" stroke="url(#lead-line)" stroke-width="6"/>
+  <path d="M110 120C126 120 140 132 140 148V158H80V148C80 132 94 120 110 120Z" fill="#07142C" stroke="url(#lead-line)" stroke-width="6"/>
+  <path d="M90 66L110 46L130 66" stroke="url(#lead-line)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
