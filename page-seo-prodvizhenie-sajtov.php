@@ -501,7 +501,7 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
           </div>
         </div>
       </div>
-      <div id="successOverlay" class="form-overlay" role="alertdialog" aria-modal="true" aria-hidden="true">
+      <div id="successOverlay" class="form-overlay" role="alertdialog" aria-modal="true" aria-hidden="true" hidden>
         <div class="form-overlay__content">
           <p class="form-overlay__text">Ваша заявка принята, с Вами свяжутся в ближайшее время. Звонок поступит с номера +79222631802.</p>
           <button type="button" class="btn form-overlay__btn" id="overlayClose">Хорошо</button>
@@ -511,10 +511,10 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
   </section>
   <?php if ( have_posts() ) : ?>
     <div class="section-divider" aria-hidden="true"></div>
-    <section class="section seo-article">
+    <section class="section article-section">
       <div class="container">
         <?php while ( have_posts() ) : the_post(); ?>
-          <article <?php post_class('seo-article__content'); ?>>
+          <article <?php post_class('seo-article'); ?>>
             <?php the_content(); ?>
           </article>
         <?php endwhile; ?>

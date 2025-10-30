@@ -210,19 +210,42 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputFiles = $('#files', asyncForm);
     const honeypot = $('#website', asyncForm);
     const endpoint = asyncForm.dataset.endpoint || asyncForm.getAttribute('action') || '';
+    let overlayShowFrame = null;
 
     const allowedExtensions = ['jpg','jpeg','png','webp','gif','pdf','doc','docx','txt','rtf','odt','ppt','pptx','xls','xlsx','csv','zip','rar','7z','gz','tar','mp3','wav','ogg','m4a','aac','mp4','mov','avi','mkv'];
     const allowedExtSet = new Set(allowedExtensions);
 
     const closeOverlay = () => {
       if (!overlay) return;
+      if (overlayShowFrame) {
+        cancelAnimationFrame(overlayShowFrame);
+        overlayShowFrame = null;
+      }
       overlay.classList.remove('show');
       overlay.setAttribute('aria-hidden', 'true');
+      if (!overlay.hidden) {
+        const handleHide = () => {
+          overlay.hidden = true;
+          overlay.removeEventListener('transitionend', handleHide);
+        };
+        overlay.addEventListener('transitionend', handleHide, { once: true });
+        setTimeout(handleHide, 400);
+      } else {
+        overlay.hidden = true;
+      }
       submitBtn?.focus({ preventScroll: true });
     };
     const showOverlay = () => {
       if (!overlay) return;
-      overlay.classList.add('show');
+      overlay.hidden = false;
+      if (overlayShowFrame) {
+        cancelAnimationFrame(overlayShowFrame);
+      }
+      // Wait a frame so the show class animates after the element becomes visible
+      overlayShowFrame = requestAnimationFrame(() => {
+        overlay.classList.add('show');
+        overlayShowFrame = null;
+      });
       overlay.setAttribute('aria-hidden', 'false');
       overlayClose?.focus({ preventScroll: true });
     };
