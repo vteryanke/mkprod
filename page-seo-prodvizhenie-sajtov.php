@@ -3,7 +3,107 @@
 Template Name: SEO Promotion Landing
 */
 get_header();
-$home_url = esc_url( home_url('/') );
+$home_url   = esc_url( home_url('/') );
+$page_id    = get_queried_object_id();
+
+$hero_kicker_raw = get_post_meta( $page_id, 'mkp_hero_kicker', true );
+$hero_title_raw  = get_post_meta( $page_id, 'mkp_hero_title', true );
+$hero_lead_raw   = get_post_meta( $page_id, 'mkp_hero_lead', true );
+$hero_badges_raw = get_post_meta( $page_id, 'mkp_hero_badges', true );
+$hero_cta_text   = get_post_meta( $page_id, 'mkp_hero_cta_text', true );
+$hero_cta_link   = get_post_meta( $page_id, 'mkp_hero_cta_link', true );
+$hero_video_raw  = get_post_meta( $page_id, 'mkp_hero_video_embed', true );
+
+$hero_kicker = $hero_kicker_raw !== '' ? esc_html( $hero_kicker_raw ) : sprintf( 'MKProd · %s', esc_html( get_theme_mod( 'mkprod_name', 'Михаил Киселёв' ) ) );
+
+$hero_title_default = 'SEO-продвижение сайтов<br><span class="hero-accent">для сложных отраслей и ниш</span>';
+$allowed_title_tags = array(
+  'span'   => array( 'class' => true ),
+  'strong' => array(),
+  'em'     => array(),
+  'br'     => array(),
+);
+$hero_title = wp_kses( $hero_title_raw !== '' ? $hero_title_raw : ( get_the_title( $page_id ) ?: $hero_title_default ), $allowed_title_tags );
+if ( '' === trim( wp_strip_all_tags( $hero_title ) ) ) {
+  $hero_title = wp_kses( $hero_title_default, $allowed_title_tags );
+}
+
+$hero_lead = $hero_lead_raw !== ''
+  ? wp_kses_post( $hero_lead_raw )
+  : 'Поднимаю органический трафик и заявки у каталогов, маркетплейсов и сервисов с длинным циклом сделки. Сильная семантика, техоптимизация и рост конверсии без шаблонных решений.';
+$hero_lead_html = $hero_lead ? wpautop( $hero_lead ) : '';
+
+$badge_lines = array();
+if ( $hero_badges_raw !== '' ) {
+  $badge_lines = array_filter( array_map( 'trim', preg_split( "/\r\n|\n|\r/", $hero_badges_raw ) ) );
+}
+if ( empty( $badge_lines ) ) {
+  $badge_lines = array(
+    'Сайты-каталоги',
+    'Автодилеры',
+    'Спецтехника',
+    'Аренда техники',
+    'Промоборудование',
+    'Производители',
+    'Спецодежда',
+    'Алкомаркеты',
+    'Онлайн-игры',
+    'Онлайн-кинотеатры',
+    'Онлайн-школы',
+    'Онлайн-библиотеки',
+  );
+}
+
+$hero_cta_text = $hero_cta_text !== '' ? esc_html( $hero_cta_text ) : 'Обсудить проект';
+$hero_cta_link = $hero_cta_link !== '' ? esc_url( $hero_cta_link ) : '#contact';
+
+$allowed_video_tags = array(
+  'iframe' => array(
+    'src'                => true,
+    'width'              => true,
+    'height'             => true,
+    'title'              => true,
+    'allow'              => true,
+    'allowfullscreen'    => true,
+    'frameborder'        => true,
+    'loading'            => true,
+    'referrerpolicy'     => true,
+    'sandbox'            => true,
+    'style'              => true,
+    'name'               => true,
+  ),
+  'div' => array(
+    'class' => true,
+    'style' => true,
+  ),
+  'span' => array(
+    'class' => true,
+    'style' => true,
+  ),
+  'p' => array(
+    'class' => true,
+    'style' => true,
+  ),
+  'a' => array(
+    'href'   => true,
+    'target' => true,
+    'rel'    => true,
+    'class'  => true,
+    'style'  => true,
+  ),
+  'img' => array(
+    'src'    => true,
+    'alt'    => true,
+    'class'  => true,
+    'width'  => true,
+    'height' => true,
+    'style'  => true,
+  ),
+);
+$hero_video = $hero_video_raw !== '' ? wp_kses( $hero_video_raw, $allowed_video_tags ) : '';
+$hero_video_placeholder = current_user_can( 'edit_post', $page_id )
+  ? 'Добавьте код плеера YouTube или RuTube в поле «Видеоплеер героя», чтобы показать ролик.'
+  : 'Здесь появится видео после обновления страницы.';
 ?>
 <header class="header">
   <div class="container row">
@@ -47,30 +147,35 @@ $home_url = esc_url( home_url('/') );
     </svg>
     <div class="container hero-wrap">
       <div>
-        <div class="kicker">MKProd · <?php echo esc_html( get_theme_mod('mkprod_name','Михаил Киселёв') ); ?></div>
-        <h1>SEO-продвижение сайтов<br><span class="hero-accent">для сложных отраслей и ниш</span></h1>
-        <p class="lead">Поднимаю органический трафик и заявки у каталогов, маркетплейсов и сервисов с длинным циклом сделки. Сильная семантика, техоптимизация и рост конверсии без шаблонных решений.</p>
-        <div class="badges">
-          <span class="badge">Сайты-каталоги</span>
-          <span class="badge">Автодилеры</span>
-          <span class="badge">Спецтехника</span>
-          <span class="badge">Аренда техники</span>
-          <span class="badge">Промоборудование</span>
-          <span class="badge">Производители</span>
-          <span class="badge">Спецодежда</span>
-          <span class="badge">Алкомаркеты</span>
-          <span class="badge">Онлайн-игры</span>
-          <span class="badge">Онлайн-кинотеатры</span>
-          <span class="badge">Онлайн-школы</span>
-          <span class="badge">Онлайн-библиотеки</span>
-        </div>
-        <p style="margin-top:18px">
-          <a href="#contact" class="btn cta">Обсудить проект</a>
-        </p>
+        <div class="kicker"><?php echo $hero_kicker; ?></div>
+        <h1><?php echo $hero_title; ?></h1>
+        <?php if ( $hero_lead_html ) : ?>
+          <div class="lead lead-rich"><?php echo $hero_lead_html; ?></div>
+        <?php endif; ?>
+        <?php if ( ! empty( $badge_lines ) ) : ?>
+          <div class="badges">
+            <?php foreach ( $badge_lines as $badge ) : ?>
+              <span class="badge"><?php echo esc_html( $badge ); ?></span>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+        <?php if ( $hero_cta_text ) : ?>
+          <p style="margin-top:18px">
+            <a href="<?php echo $hero_cta_link; ?>" class="btn cta"><?php echo $hero_cta_text; ?></a>
+          </p>
+        <?php endif; ?>
       </div>
       <div class="hero-card" data-parallax-speed="0.08">
-        <div class="video-slot" data-youtube="https://www.youtube.com/embed/"></div>
-        <div class="play"><button class="btn" aria-label="Смотреть видео">▶ Смотреть видео</button></div>
+        <?php if ( $hero_video ) : ?>
+          <div class="video-slot video-slot--embed"><?php echo $hero_video; ?></div>
+        <?php else : ?>
+          <div class="video-slot video-slot--placeholder" aria-hidden="true">
+            <div class="video-placeholder">
+              <span class="video-placeholder__icon" aria-hidden="true">▶</span>
+              <p class="video-placeholder__text"><?php echo esc_html( $hero_video_placeholder ); ?></p>
+            </div>
+          </div>
+        <?php endif; ?>
       </div>
     </div>
   </section>
