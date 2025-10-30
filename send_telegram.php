@@ -31,6 +31,14 @@ if ($contact==='') {
   exit;
 }
 
+function mkp_curl_file($path, $mime, $name) {
+  if (function_exists('curl_file_create')) {
+    return curl_file_create($path, $mime, $name);
+  }
+
+  return new CURLFile($path, $mime, $name);
+}
+
 // === ТЕКСТ СООБЩЕНИЯ ===
 $text  = "📬 <b>Новая заявка с сайта MKProd</b>\n\n";
 $text .= "☎ Контакт: {$contact}\n";
@@ -45,34 +53,77 @@ tg_api('sendMessage', [
 
 // === ОТПРАВКА ПРИКРЕПЛЁННЫХ ФАЙЛОВ ===
 if (!empty($_FILES['files']['name'][0])) {
+  $uploads = [];
+  $maxSize = 20 * 1024 * 1024; // 20 МБ
+  $allowedExt = [
+    'jpg','jpeg','png','webp','gif',
+    'pdf','doc','docx','txt','rtf','odt',
+    'ppt','pptx','xls','xlsx','csv',
+    'zip','rar','7z','gz','tar',
+    'mp3','wav','ogg','m4a','aac',
+    'mp4','mov','avi','mkv'
+  ];
+
   $fileCount = count($_FILES['files']['name']);
-  for ($i=0; $i<$fileCount; $i++) {
+  for ($i = 0; $i < $fileCount; $i++) {
     $tmp  = $_FILES['files']['tmp_name'][$i];
     $name = $_FILES['files']['name'][$i];
+    $size = $_FILES['files']['size'][$i];
+
     if (!is_uploaded_file($tmp)) continue;
+    if ($size > $maxSize) continue;
+
+    $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+    if ($ext && !in_array($ext, $allowedExt, true)) continue;
+
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    $mime  = finfo_file($finfo, $tmp);
-    finfo_close($finfo);
+    $mime  = $finfo ? finfo_file($finfo, $tmp) : null;
+    if ($finfo) finfo_close($finfo);
+    if (!$mime) $mime = 'application/octet-stream';
 
-    // допустимые типы
-    $allowed = [
-  'image/jpeg','image/png','image/webp','image/gif',
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/zip','application/x-zip-compressed',
-  'audio/mpeg','audio/mp3','audio/wav','audio/x-wav',
-  'text/plain'
-];
-    if (!in_array($mime,$allowed)) continue;
-
-    $cFile = new CURLFile($tmp, $mime, $name);
-    $params = [
-      'chat_id' => $chat_id,
-      'caption' => "📎 {$name}",
-      'document' => $cFile
+    $uploads[] = [
+      'tmp'  => $tmp,
+      'name' => $name,
+      'mime' => $mime
     ];
-    tg_api('sendDocument', $params);
+  }
+
+  if (!empty($uploads)) {
+    $chunks = array_chunk($uploads, 10); // Telegram media group ограничен 10 файлами
+
+    foreach ($chunks as $chunk) {
+      if (count($chunk) === 1) {
+        $file = $chunk[0];
+        $cFile = mkp_curl_file($file['tmp'], $file['mime'], $file['name']);
+        tg_api('sendDocument', [
+          'chat_id'  => $chat_id,
+          'caption'  => "📎 {$file['name']}",
+          'document' => $cFile
+        ]);
+        continue;
+      }
+
+      $params = [
+        'chat_id' => $chat_id
+      ];
+      $media = [];
+
+      foreach ($chunk as $idx => $file) {
+        $field = 'file' . $idx;
+        $params[$field] = mkp_curl_file($file['tmp'], $file['mime'], $file['name']);
+        $media[] = [
+          'type'    => 'document',
+          'media'   => 'attach://' . $field,
+          'caption' => "📎 {$file['name']}"
+        ];
+      }
+
+      $params['media'] = json_encode($media, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+      tg_api('sendMediaGroup', $params);
+
+      // небольшая пауза для избежания ограничения Flood control
+      usleep(350000);
+    }
   }
 }
 
