@@ -1,0 +1,28 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="analytics-bg" x1="200" y1="36" x2="60" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0B1431"/>
+      <stop offset="1" stop-color="#030812"/>
+    </linearGradient>
+    <linearGradient id="analytics-line" x1="60" y1="200" x2="180" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00F0FF"/>
+      <stop offset="1" stop-color="#7A5CFF"/>
+    </linearGradient>
+    <filter id="analytics-blur" x="-50" y="-50" width="340" height="340" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16" result="blur"/>
+      <feBlend in="SourceGraphic" in2="blur" mode="screen"/>
+    </filter>
+  </defs>
+  <rect width="240" height="240" rx="36" fill="url(#analytics-bg)"/>
+  <rect x="26" y="26" width="188" height="188" rx="28" stroke="rgba(0,240,255,0.3)"/>
+  <path d="M60 180C60 136 96 100 140 100C155.357 100 170.207 105.11 182.597 114.37" stroke="rgba(0,240,255,0.2)" stroke-width="4" stroke-linecap="round" stroke-dasharray="8 16"/>
+  <g filter="url(#analytics-blur)">
+    <path d="M64 158L96 118L126 150L160 102L182 134" stroke="url(#analytics-line)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <circle cx="96" cy="118" r="14" fill="#08162E" stroke="url(#analytics-line)" stroke-width="5"/>
+  <circle cx="126" cy="150" r="12" fill="#08162E" stroke="url(#analytics-line)" stroke-width="4"/>
+  <circle cx="160" cy="102" r="16" fill="#08162E" stroke="url(#analytics-line)" stroke-width="6"/>
+  <circle cx="182" cy="134" r="11" fill="#08162E" stroke="url(#analytics-line)" stroke-width="4"/>
+  <path d="M64 178H180" stroke="rgba(0,240,255,0.18)" stroke-width="4" stroke-linecap="round"/>
+  <path d="M64 194H180" stroke="rgba(0,240,255,0.12)" stroke-width="4" stroke-linecap="round"/>
+</svg>

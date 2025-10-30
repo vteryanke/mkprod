@@ -23,6 +23,7 @@ function tg_api($method, $params) {
 
 
 // === ДАННЫЕ ИЗ ФОРМЫ ===
+$name    = trim($_POST['name'] ?? '');
 $contact = trim($_POST['contact'] ?? '');
 $msg     = trim($_POST['message'] ?? '');
 
@@ -42,6 +43,7 @@ function mkp_curl_file($path, $mime, $name) {
 // === ТЕКСТ СООБЩЕНИЯ ===
 $text  = "📬 <b>Новая заявка с сайта MKProd</b>\n\n";
 $text .= "☎ Контакт: {$contact}\n";
+if ($name!=='') $text .= "👤 Имя: {$name}\n";
 if ($msg!=='') $text .= "💬 Сообщение:\n{$msg}\n";
 
 tg_api('sendMessage', [
