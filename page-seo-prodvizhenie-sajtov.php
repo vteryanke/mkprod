@@ -440,36 +440,15 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
   <section id="contact" class="section seo-contact">
     <div class="container">
       <div class="seo-contact__grid">
-        <div class="seo-contact__intro" data-reveal>
-          <h2><?php echo esc_html( get_theme_mod( 'mkprod_contact_title', 'Готов обсудить ваш проект' ) ); ?></h2>
-          <p><?php echo esc_html( get_theme_mod( 'mkprod_contact_subtitle', 'Оставьте контакты — вернусь с первичными идеями и оценкой.' ) ); ?></p>
-          <ul class="seo-contact__benefits">
-            <li>Созвон с Михаилом Киселёвым в ближайшие 24 часа</li>
-            <li>Разбор текущего сайта и быстрых точек роста</li>
-            <li>Пошаговый план внедрения SEO-улучшений</li>
-          </ul>
-        </div>
-        <div class="seo-contact__panel">
-          <div class="card mkp-contacts" data-reveal>
-            <h3>Контакты</h3>
-            <svg class="mkp-contacts-wave" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mkpG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#7a5cff"/></linearGradient><filter id="mkpGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M0,38 C40,18 80,48 120,26 C160,8 200,38 240,18" fill="none" stroke="url(#mkpG)" stroke-width="3" filter="url(#mkpGlow)"/></svg>
-            <p><b>MKProd</b> · Команда</p>
-            <ul class="seo-contact__links">
-              <?php if ( get_theme_mod( 'mkprod_vk' ) ) : ?>
-                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_vk' ) ); ?>" target="_blank" rel="noopener"><span class="ico">🔗</span> VK — сообщество MKProd</a></li>
-              <?php endif; ?>
-              <?php if ( get_theme_mod( 'mkprod_telegram' ) ) : ?>
-                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_telegram' ) ); ?>" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram — @mkprod</a></li>
-              <?php endif; ?>
-              <?php if ( get_theme_mod( 'mkprod_email' ) ) : ?>
-                <li><a class="badge" href="mailto:<?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📧</span> <?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?></a></li>
-              <?php endif; ?>
-              <?php if ( get_theme_mod( 'mkprod_phone' ) ) : ?>
-                <li><a class="badge" href="tel:<?php echo preg_replace( '/[^0-9+]/', '', get_theme_mod( 'mkprod_phone' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📞</span> <?php echo get_theme_mod( 'mkprod_phone' ); ?></a></li>
-              <?php endif; ?>
+        <div class="seo-contact__content">
+          <div class="seo-contact__intro" data-reveal>
+            <h2><?php echo esc_html( get_theme_mod( 'mkprod_contact_title', 'Готов обсудить ваш проект' ) ); ?></h2>
+            <p><?php echo esc_html( get_theme_mod( 'mkprod_contact_subtitle', 'Оставьте контакты — вернусь с первичными идеями и оценкой.' ) ); ?></p>
+            <ul class="seo-contact__benefits">
+              <li>Созвон с Михаилом Киселёвым в ближайшие 24 часа</li>
+              <li>Разбор текущего сайта и быстрых точек роста</li>
+              <li>Пошаговый план внедрения SEO-улучшений</li>
             </ul>
-            <p class="note">Во время интеграции подставлю реальные ссылки и подключу форму к почте/CRM.</p>
-            <div class="mkp-contacts-grid"></div>
           </div>
           <div class="seo-contact__form" data-reveal>
             <div class="seo-contact__form-glow" aria-hidden="true"></div>
@@ -498,6 +477,29 @@ $privacy_url = $privacy_url ? esc_url( $privacy_url ) : '';
               </div>
               <div id="formMsg" class="form-msg" style="margin-top:10px;font-size:14px;"></div>
             </form>
+          </div>
+        </div>
+        <div class="seo-contact__aside">
+          <div class="card mkp-contacts" data-reveal>
+            <h3>Контакты</h3>
+            <svg class="mkp-contacts-wave" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="mkpG" x1="0" x2="1"><stop offset="0" stop-color="#00f0ff"/><stop offset="1" stop-color="#7a5cff"/></linearGradient><filter id="mkpGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M0,38 C40,18 80,48 120,26 C160,8 200,38 240,18" fill="none" stroke="url(#mkpG)" stroke-width="3" filter="url(#mkpGlow)"/></svg>
+            <p><b>MKProd</b> · Команда</p>
+            <ul class="seo-contact__links">
+              <?php if ( get_theme_mod( 'mkprod_vk' ) ) : ?>
+                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_vk' ) ); ?>" target="_blank" rel="noopener"><span class="ico">🔗</span> VK — сообщество MKProd</a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_telegram' ) ) : ?>
+                <li><a class="badge" href="<?php echo esc_url( get_theme_mod( 'mkprod_telegram' ) ); ?>" target="_blank" rel="noopener"><span class="ico">✈</span> Telegram — @mkprod</a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_email' ) ) : ?>
+                <li><a class="badge" href="mailto:<?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📧</span> <?php echo antispambot( get_theme_mod( 'mkprod_email' ) ); ?></a></li>
+              <?php endif; ?>
+              <?php if ( get_theme_mod( 'mkprod_phone' ) ) : ?>
+                <li><a class="badge" href="tel:<?php echo preg_replace( '/[^0-9+]/', '', get_theme_mod( 'mkprod_phone' ) ); ?>" target="_blank" rel="noopener"><span class="ico">📞</span> <?php echo get_theme_mod( 'mkprod_phone' ); ?></a></li>
+              <?php endif; ?>
+            </ul>
+            <p class="note">Во время интеграции подставлю реальные ссылки и подключу форму к почте/CRM.</p>
+            <div class="mkp-contacts-grid"></div>
           </div>
         </div>
       </div>

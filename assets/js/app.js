@@ -558,12 +558,13 @@ document.addEventListener('DOMContentLoaded', function(){
       display:flex;flex-wrap:wrap;gap:8px;
     }
     .dz-item{
-      display:inline-flex;align-items:center;gap:12px;
-      padding:6px 8px 6px 12px;
+      display:flex;flex-wrap:wrap;align-items:flex-start;gap:10px;
+      padding:8px 10px 8px 14px;
       border:1px solid rgba(0,240,255,.25);
-      border-radius:999px;
+      border-radius:18px;
       background:rgba(0,240,255,.04);
       box-shadow: inset 0 0 0 rgba(0,240,255,0);
+      max-width:100%;
       /* стартовое состояние для анимации */
       opacity:0; transform: translateY(6px);
     }
@@ -571,9 +572,13 @@ document.addEventListener('DOMContentLoaded', function(){
       animation: dz-in .35s ease forwards;
     }
     .dz-name{
-      max-width: 260px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      flex:1 1 auto;
+      min-width:0;
+      max-width:100%;
       font-size:13px;color:var(--muted);
+      line-height:1.45;
+      word-break:break-word;
+      overflow-wrap:anywhere;
     }
     .dz-del{
       position:static; /* важное отличие: больше не absolute */
@@ -587,6 +592,9 @@ document.addEventListener('DOMContentLoaded', function(){
       font-size:13px;font-weight:700;
       transition:transform .2s ease, box-shadow .2s ease, color .2s ease, border-color .2s ease;
       box-shadow: 0 0 0 rgba(0,240,255,0);
+      flex:0 0 auto;
+      align-self:center;
+      margin-left:auto;
     }
     .dz-del:hover{
       transform: scale(1.12);
@@ -605,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     @media (max-width:640px){
-      .dz-name{ max-width: 52vw; }
+      .dz-item{max-width:100%;}
     }
   `;
   document.head.appendChild(style);

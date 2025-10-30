@@ -324,16 +324,17 @@ h2::after{content:"";position:absolute;left:0;bottom:0;width:120px;height:3px;ba
 .seo-adv-card__body{position:relative;z-index:1}
 .seo-adv-card h3{margin-bottom:10px;font-size:20px}
 .seo-contact{position:relative;background:radial-gradient(900px 360px at 15% 0%, rgba(0,240,255,.12), transparent 65%), radial-gradient(700px 380px at 80% 20%, rgba(122,92,255,.14), transparent 70%)}
-.seo-contact__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:42px;align-items:start}
-.seo-contact__panel{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,0.95fr);grid-template-areas:"form card";gap:26px;align-items:stretch}
-.seo-contact__intro{max-width:420px;position:relative;z-index:1}
+.seo-contact__grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,0.85fr);gap:48px;align-items:stretch}
+.seo-contact__content{display:flex;flex-direction:column;gap:32px;position:relative;z-index:1}
+.seo-contact__intro{max-width:680px;position:relative;z-index:1}
 .seo-contact__benefits{margin:20px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:15px;color:var(--muted)}
 .seo-contact__benefits li{position:relative;padding-left:26px}
 .seo-contact__benefits li::before{content:"";position:absolute;left:0;top:9px;width:10px;height:10px;border-radius:50%;background:linear-gradient(90deg,#00f0ff,#7a5cff);box-shadow:0 0 12px rgba(0,240,255,.45)}
 .seo-contact__links{list-style:none;margin:16px 0 0;padding:0;display:flex;flex-direction:column;gap:10px}
 .seo-contact__links .badge{width:100%;display:flex;align-items:center;gap:10px;justify-content:flex-start}
-.seo-contact__panel .mkp-contacts{grid-area:card;height:100%;display:flex;flex-direction:column;justify-content:flex-start}
-.seo-contact__form{grid-area:form;position:relative;padding:28px;border-radius:26px;border:1px solid rgba(0,240,255,.28);background:linear-gradient(180deg,rgba(12,18,30,.96),rgba(12,18,30,.76));box-shadow:0 26px 54px rgba(0,0,0,.6);backdrop-filter:blur(12px);overflow:hidden;isolation:isolate;display:flex;flex-direction:column}
+.seo-contact__aside{display:flex;align-items:stretch}
+.seo-contact__aside .mkp-contacts{height:100%;display:flex;flex-direction:column;justify-content:flex-start}
+.seo-contact__form{position:relative;padding:28px;border-radius:26px;border:1px solid rgba(0,240,255,.28);background:linear-gradient(180deg,rgba(12,18,30,.96),rgba(12,18,30,.76));box-shadow:0 26px 54px rgba(0,0,0,.6);backdrop-filter:blur(12px);overflow:hidden;isolation:isolate;display:flex;flex-direction:column}
 .seo-contact__form form{flex:1;display:flex;flex-direction:column;gap:14px;margin:0}
 .seo-contact__form-glow{position:absolute;inset:-120px;background:radial-gradient(circle at 70% 30%,rgba(0,240,255,.45),transparent 65%);filter:blur(80px);opacity:.8;animation:pulse 8s ease-in-out infinite;pointer-events:none}
 .seo-contact__submit{display:flex;align-items:center;gap:16px;margin-top:auto;padding-top:10px}
@@ -358,8 +359,8 @@ h2::after{content:"";position:absolute;left:0;bottom:0;width:120px;height:3px;ba
   .seo-advantages{grid-template-columns:1fr}
   .seo-steps{grid-template-columns:1fr}
   .seo-contact__grid{grid-template-columns:1fr;gap:32px}
-  .seo-contact__panel{grid-template-columns:1fr;grid-template-areas:"form" "card"}
-  .seo-contact__panel .mkp-contacts{height:auto}
+  .seo-contact__aside .mkp-contacts{height:auto}
+  .seo-contact__content{gap:28px}
 }
 @media (max-width:780px){
   .header--seo .nav{display:none}
@@ -367,7 +368,7 @@ h2::after{content:"";position:absolute;left:0;bottom:0;width:120px;height:3px;ba
   .seo-hero{padding-top:96px}
   .seo-calc__result-card{padding:24px}
   .seo-contact__intro{max-width:100%}
-  .seo-contact__panel{gap:22px}
+  .seo-contact__content{gap:24px}
   .seo-contact__submit{margin-top:12px;padding-top:0}
   .seo-adv-card{grid-template-columns:1fr;justify-items:flex-start;text-align:left}
   .seo-adv-card__visual{width:96px;height:96px}
@@ -638,7 +639,29 @@ h2::after{filter:drop-shadow(0 0 8px rgba(0,240,255,.35))}
   border:1px solid rgba(0,240,255,.18);
   box-shadow:0 18px 38px rgba(0,0,0,.35);
   overflow:hidden;
+  width:100%;
 }
+.seo-article .wp-block-group,
+.seo-article .wp-block-group__inner-container,
+.seo-article .wp-block-columns,
+.seo-article .wp-block-column,
+.seo-article .wp-block-image,
+.seo-article .wp-block-cover,
+.seo-article .wp-block-media-text{
+  max-width:100%;
+}
+.seo-article .wp-block-group__inner-container{padding:0;margin:0 auto;width:100%;}
+.seo-article .wp-block-group.alignwide,
+.seo-article .wp-block-group.alignfull,
+.seo-article .wp-block-image.alignwide,
+.seo-article .wp-block-image.alignfull,
+.seo-article .wp-block-cover.alignwide,
+.seo-article .wp-block-cover.alignfull{
+  width:100%;
+  max-width:100%;
+}
+.seo-article .wp-block-columns{gap:clamp(16px,3vw,32px)}
+.seo-article .wp-block-column{flex:1 1 0}
 
 .seo-article table{
   width:100%;
