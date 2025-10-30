@@ -32,6 +32,7 @@
 
     <style id="mkp-uploader-style">
       .mkp-dropzone{border:1px dashed rgba(0,240,255,.35);border-radius:14px;padding:14px;background:rgba(0,240,255,.03);margin:10px 0 12px}
+      .mkp-dropzone.is-dragover{border-style:solid;border-color:rgba(0,240,255,.6);background:rgba(0,240,255,.08);box-shadow:0 0 18px rgba(0,240,255,.25),0 0 32px rgba(122,92,255,.18)}
       .mkp-dropzone .dz-cta{display:flex;align-items:center;gap:10px;color:var(--muted);flex-wrap:wrap}
       .mkp-dropzone .dz-ico{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;border:1px solid rgba(0,240,255,.35);background:rgba(0,240,255,.06);font-weight:800}
       .mkp-dropzone .dz-btn{background:transparent;border:none;color:var(--txt);text-decoration:underline;cursor:pointer}
@@ -409,6 +410,17 @@ const loader = btn.querySelector('.loader');
 const msgBox = document.getElementById('formMsg');
 const successOverlay = document.getElementById('successOverlay');
 const overlayClose = document.getElementById('overlayClose');
+const allowedExtensions = ['jpg','jpeg','png','webp','gif','pdf','doc','docx','txt','rtf','odt','ppt','pptx','xls','xlsx','csv','zip','rar','7z','gz','tar','mp3','wav','ogg','m4a','aac','mp4','mov','avi','mkv'];
+const allowedExtSet = new Set(allowedExtensions);
+
+const getSelectedFiles = ()=>{
+  if (typeof window.mkpGetFiles === 'function') {
+    const buf = window.mkpGetFiles();
+    return Array.isArray(buf) ? buf.slice() : [];
+  }
+  if (!inputFiles || !inputFiles.files) return [];
+  return Array.from(inputFiles.files);
+};
 
 const closeOverlay = ()=>{
   successOverlay.classList.remove('show');
@@ -448,14 +460,17 @@ dzBtn.addEventListener('click', e=>{
   inputFiles.click();
 });
 
-inputFiles.addEventListener('change', ()=>{
-  dzList.innerHTML = '';
-  for (const f of inputFiles.files){
-    const li = document.createElement('li');
-    li.textContent = f.name;
-    dzList.appendChild(li);
-  }
-});
+if (inputFiles){
+  inputFiles.addEventListener('change', ()=>{
+    if (typeof window.mkpGetFiles === 'function') return;
+    dzList.innerHTML = '';
+    for (const f of inputFiles.files){
+      const li = document.createElement('li');
+      li.textContent = f.name;
+      dzList.appendChild(li);
+    }
+  });
+}
 
 // --- отправка ---
 form.addEventListener('submit', async e=>{
@@ -467,9 +482,17 @@ form.addEventListener('submit', async e=>{
   if (document.getElementById('website').value.trim() !== '') return;
 
   // проверка файлов
-  for (const f of inputFiles.files) {
+  const filesToCheck = getSelectedFiles();
+  for (const f of filesToCheck) {
     if (f.size > 20 * 1024 * 1024) {
       msgBox.textContent = '❌ Файл ' + f.name + ' превышает 20 МБ';
+      msgBox.classList.add('error');
+      return;
+    }
+    const parts = f.name.split('.');
+    const ext = parts.length > 1 ? parts.pop().toLowerCase() : '';
+    if (ext && !allowedExtSet.has(ext)) {
+      msgBox.textContent = '❌ Файл ' + f.name + ' имеет неподдерживаемый формат';
       msgBox.classList.add('error');
       return;
     }
@@ -483,6 +506,13 @@ form.addEventListener('submit', async e=>{
   progressBar.style.width='0%';
 
   const data = new FormData(form);
+  if (typeof window.mkpGetFiles === 'function') {
+    const buffered = getSelectedFiles();
+    data.delete('files[]');
+    buffered.forEach(file => {
+      data.append('files[]', file, file.name);
+    });
+  }
   const xhr = new XMLHttpRequest();
   xhr.open('POST', '<?php echo get_template_directory_uri(); ?>/send_telegram.php', true);
 

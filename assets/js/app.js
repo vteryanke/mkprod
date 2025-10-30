@@ -176,6 +176,14 @@ document.addEventListener('DOMContentLoaded', function(){
 
   let pickerBusy = false;
   let filesBuffer = [];
+  let dragCounter = 0;
+
+  function syncNativeInput(){
+    if (typeof DataTransfer !== 'function') return;
+    const dt = new DataTransfer();
+    filesBuffer.forEach(file => dt.items.add(file));
+    inputFiles.files = dt.files;
+  }
 
   function renderList(){
     dzList.innerHTML = '';
@@ -192,7 +200,10 @@ document.addEventListener('DOMContentLoaded', function(){
       del.className = 'dz-del';
       del.setAttribute('aria-label','Удалить файл ' + f.name);
       del.textContent = '✕';
-      del.onclick = ()=>{ filesBuffer.splice(i,1); renderList(); };
+      del.onclick = ()=>{
+        filesBuffer.splice(i,1);
+        renderList();
+      };
 
       li.appendChild(name);
       li.appendChild(del);
@@ -201,6 +212,16 @@ document.addEventListener('DOMContentLoaded', function(){
       // триггерим анимацию появления
       requestAnimationFrame(()=> li.classList.add('enter'));
     });
+    syncNativeInput();
+  }
+
+  function addFiles(fileList){
+    if (!fileList || !fileList.length) return;
+    Array.from(fileList).forEach(file => {
+      const duplicate = filesBuffer.some(x => x.name === file.name && x.size === file.size && x.lastModified === file.lastModified);
+      if (!duplicate) filesBuffer.push(file);
+    });
+    renderList();
   }
 
   function openPickerOnce(){
@@ -222,15 +243,48 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 
   inputFiles.addEventListener('change', ()=>{
-    for(const f of inputFiles.files){
-      if(!filesBuffer.some(x=>x.name===f.name && x.size===f.size)) filesBuffer.push(f);
+    addFiles(inputFiles.files);
+  });
+
+  dropzone.addEventListener('dragenter', e=>{
+    e.preventDefault();
+    dragCounter++;
+    dropzone.classList.add('is-dragover');
+  });
+
+  dropzone.addEventListener('dragover', e=>{
+    e.preventDefault();
+  });
+
+  dropzone.addEventListener('dragleave', e=>{
+    if (e.relatedTarget && dropzone.contains(e.relatedTarget)) {
+      dragCounter = Math.max(0, dragCounter - 1);
+      return;
     }
-    renderList();
+    dragCounter = 0;
+    dropzone.classList.remove('is-dragover');
+  });
+
+  dropzone.addEventListener('drop', e=>{
+    e.preventDefault();
+    dragCounter = 0;
+    dropzone.classList.remove('is-dragover');
+    const files = e.dataTransfer?.files;
+    if (files && files.length){
+      addFiles(files);
+    }
   });
 
   // Инжектим стили для нового макета + неоновой анимации
   const style = document.createElement('style');
   style.textContent = `
+    .mkp-dropzone.is-dragover{
+      border-style:solid;
+      border-color:rgba(0,240,255,.6);
+      background:rgba(0,240,255,.08);
+      box-shadow:0 0 18px rgba(0,240,255,.25),0 0 32px rgba(122,92,255,.18);
+    }
+
     /* Список: flex-«чипсы» с разносом имени и крестика */
     .dz-list{
       list-style:none;margin:10px 0 0;padding:0;
@@ -288,6 +342,9 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   `;
   document.head.appendChild(style);
+
+  dropzone.dataset.mkpEnhanced = '1';
+  inputFiles.dataset.mkpEnhanced = '1';
 
   // экспорт, если нужно из другого кода
   window.mkpGetFiles = ()=> filesBuffer;
